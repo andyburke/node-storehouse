@@ -164,3 +164,13 @@ ajaxCall({
     }
 });
 ```
+
+## Why?
+
+I created this because I became fustrated working with Amazon S3/CloudFront. Don't get me wrong, S3/CloudFront is great: tough to beat on price and there's no question of it handling scaling.
+
+So why was I frustrated? Because I am often a 1-man team. Amazon AWS services are great, but they're really meant for larger-scale operations. Sometimes you just need to upload some files and not have to try to figure out all the nooks and crannies that AWS provides for managing a huge enterprise. And Amazon's approach is essentially that you write your own tooling.
+
+Check out this great post by Vikrum Nijjar about switching from S3 to Fastly: https://www.firebase.com/blog/2012-07-30-making-the-switch-from-amazon-cloudfront-to-fastly.html
+
+That post started me down this road. Except I needed a way for users to upload things to my server that I could then allow Fastly to cache. Hence: Silo.
