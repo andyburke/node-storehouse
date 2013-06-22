@@ -1,34 +1,34 @@
-Silo <img src="https://raw.github.com/andyburke/node-silo/master/silo.png" width="48" height="48" />
+Storehouse <img src="https://raw.github.com/andyburke/node-storehouse/master/storehouse.png" width="48" height="48" />
 =========
 
-Silo is a small, simple *node.js* module that allows you to easily handle HTTP file uploads. It also comes with a convenient command line utility for creating a standalone Silo server.
+Storehouse is a small, simple *node.js* module that allows you to easily handle HTTP file uploads. It also comes with a convenient command line utility for creating a standalone Storehouse server.
 
 ## Installation
 
-Silo requires *node.js* and *npm*.
+Storehouse requires *node.js* and *npm*.
 
-You can install Silo for use in your own project:
-
-```
-npm install silo
-```
-
-Or you can install Silo globally, making it easy to run the standalone server:
+You can install Storehouse for use in your own project:
 
 ```
-sudo npm install silo -g
+npm install storehouse
+```
+
+Or you can install Storehouse globally, making it easy to run the standalone server:
+
+```
+sudo npm install storehouse -g
 ```
 
 ## Usage
 
 ### In your project:
 
-If you're already using express, you can attach a silo directly to your app:
+If you're already using express, you can attach a storehouse directly to your app:
 
 ```javascript
-var Silo = require( 'silo' );
+var Storehouse = require( 'storehouse' );
 
-var silo = new Silo({
+var storehouse = new Storehouse({
     url: '/fileupload',
     directory: './files',
     allowDownload: true,
@@ -36,21 +36,21 @@ var silo = new Silo({
     secret: 'this is the secret key'
 });
 
-silo.attach( app ); // attach to an existing express app
+storehouse.attach( app ); // attach to an existing express app
 ```
 
-If you don't already have an express app, you can tell silo to listen on its own:
+If you don't already have an express app, you can tell storehouse to listen on its own:
 
 ```javascript
-silo.listen({
+storehouse.listen({
     port: 8888 
 });
 ```
 
-Silo also supports SSL:
+Storehouse also supports SSL:
 
 ```javascript
-silo.listen({
+storehouse.listen({
     port: 8888,
     ssl: {
         key: './path/to/ssl.key',
@@ -63,12 +63,12 @@ silo.listen({
 ### As a standalone server:
 
 ```
-  Usage: silo [options]
+  Usage: storehouse [options]
 
   Options:
 
     -h, --help                 output usage information
-    -s, --secret <secret key>  Specify the secret key for the silo. !!REQUIRED!!
+    -s, --secret <secret key>  Specify the secret key for the storehouse. !!REQUIRED!!
     --nooverwrite              Do not allow files to be overwritten.
     --url <url>                Specify the upload url. Eg: --url "/uploadfile"  Default: /upload
     -d, --directory <path>     Specify the location to store files. Eg: --directory ./files  Default: ./
@@ -83,17 +83,17 @@ silo.listen({
 Example:
 
 ```
-silo -s "this is the secret key" --allowDownload --url /testupload --nooverwrite
+storehouse -s "this is the secret key" --allowDownload --url /testupload --nooverwrite
 ```
 
-This would start a Silo server with the secret key "this is the secret key" that:
+This would start a Storehouse server with the secret key "this is the secret key" that:
  - Allows downloads
  - Has an upload url of: /testupload
  - Does not allow overwriting existing files
 
 ## Cool, how do I keep everyone on the internet from uploading?
 
-That's where the secret key comes in: to upload you must send a signature along with the file which Silo will validate.
+That's where the secret key comes in: to upload you must send a signature along with the file which Storehouse will validate.
 
 The signature is a SHA1 of some information about the file plus the secret key. Specifically:
 
@@ -105,7 +105,7 @@ The signature you send with the file must match this signature composed from the
 
 ## That's great, but how do I generate a signature without leaking my secret key?
 
-Good question! Silo is mostly intended to be used as a part of an existing web infrastructure where you already have some kind of web service running.
+Good question! Storehouse is mostly intended to be used as a part of an existing web infrastructure where you already have some kind of web service running.
 
 In that service, you should expose a way for a user to obtain a signature for a file they'd like to upload. In that case, you can verify they have permission to upload and you can keep your secret key secret. Here's an example of how you might usually handle a file upload in this way:
 
@@ -159,7 +159,7 @@ ajaxCall({
            alert( 'Aborted!' );
         }, false );
     
-        xhr.open( 'POST', '/fileupload', true ); // open a post to whatever URL you've configured Silo to listen to
+        xhr.open( 'POST', '/fileupload', true ); // open a post to whatever URL you've configured Storehouse to listen to
         xhr.send( formData ); // send the file
     }
 });
@@ -173,4 +173,4 @@ So why was I frustrated? Because I am often a 1-man team. Amazon AWS services ar
 
 Check out this great post by Vikrum Nijjar about switching from S3 to Fastly: https://www.firebase.com/blog/2012-07-30-making-the-switch-from-amazon-cloudfront-to-fastly.html
 
-That post started me down this road. Except I needed a way for users to upload things to my server that I could then allow Fastly to cache. Hence: Silo.
+That post started me down this road. Except I needed a way for users to upload things to my server that I could then allow Fastly to cache. Hence: Storehouse.

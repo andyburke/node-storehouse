@@ -1,6 +1,6 @@
-var Silo = require( '../silo' );
+var Storehouse = require( '../storehouse' );
 
-var silo = new Silo({
+var storehouse = new Storehouse({
     url: '/testupload',
     directory: './',
     allowDownload: true,
@@ -8,6 +8,6 @@ var silo = new Silo({
     secret: 'this is the secret key'
 });
 
-silo.listen({
+storehouse.listen({
     port: 8888 
 });

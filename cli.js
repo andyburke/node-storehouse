@@ -4,7 +4,7 @@ var humanize = require( 'humanize' );
 
 program
     .usage( '[options]' )
-    .option( '-s, --secret <secret key>', 'Specify the secret key for the silo. !!REQUIRED!!' )
+    .option( '-s, --secret <secret key>', 'Specify the secret key. !!REQUIRED!!' )
     .option( '--nooverwrite', 'Do not allow files to be overwritten.' )
     .option( '--url <url>', 'Specify the upload url. Eg: --url "/uploadfile"  Default: /upload' )
     .option( '-d, --directory <path>', 'Specify the location to store files. Eg: --directory ./files  Default: ./' )
@@ -22,7 +22,7 @@ if ( !program.secret )
     process.exit( 1 );
 }
 
-var Silo = require( './silo' );
+var Storehouse = require( './storehouse' );
 
 var options = {
     secret: program.secret
@@ -41,11 +41,11 @@ if ( program.port )          listenOptions[ 'port' ] = program.port;
 if ( program.sslkey )        listenOptions.ssl[ 'key' ] = program.sslkey;
 if ( program.sslcert )       listenOptions.ssl[ 'cert' ] = program.sslcert;
 
-var silo = new Silo( options ).listen( listenOptions );
+var storehouse = new Storehouse( options ).listen( listenOptions );
 
 if ( !program.quiet )
 {
-    silo.on( 'uploaded', function( event ) {
+    storehouse.on( 'uploaded', function( event ) {
         console.log( humanize.date( 'c' ) + ' uploaded: ' + event.path + ' (' + event.location + ') ' + humanize.filesize( event.size ) );
     });
 }
