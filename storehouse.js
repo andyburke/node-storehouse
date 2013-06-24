@@ -14,7 +14,7 @@ var defaults = {
     overwrite: true
 };
 
-var Silo = function( _options ) {
+var Storehouse = function( _options ) {
     var self = this;
     EventEmitter.call( self );
     
@@ -26,9 +26,9 @@ var Silo = function( _options ) {
     }
 }
 
-util.inherits( Silo, EventEmitter );
+util.inherits( Storehouse, EventEmitter );
 
-Silo.prototype.attach = function( app ) {
+Storehouse.prototype.attach = function( app ) {
     var self = this;
 
     if ( self.options.allowDownload )
@@ -121,7 +121,7 @@ var listenDefaults = {
     }
 };
 
-Silo.prototype.listen = function( _options ) {
+Storehouse.prototype.listen = function( _options ) {
     var self = this;
 
     var options = extend( {}, listenDefaults, _options );
@@ -158,4 +158,4 @@ Silo.prototype.listen = function( _options ) {
     return self;
 }
 
-module.exports = Silo;
+module.exports = Storehouse;

@@ -2,9 +2,11 @@
 var program = require( 'commander' );
 var humanize = require( 'humanize' );
 
+var keyfilename = '.storehouse_key';
+
 program
     .usage( '[options]' )
-    .option( '-s, --secret <secret key>', 'Specify the secret key. !!REQUIRED!!' )
+    .option( '-s, --secret <secret key>', 'Specify the secret key. If this is not specifed, storehouse will check for a ' + keyfilename + ' file in the current directory. A key *must* be specified using this option or with a key file.' )
     .option( '--nooverwrite', 'Do not allow files to be overwritten.' )
     .option( '--url <url>', 'Specify the upload url. Eg: --url "/uploadfile"  Default: /upload' )
     .option( '-d, --directory <path>', 'Specify the location to store files. Eg: --directory ./files  Default: ./' )
@@ -18,8 +20,17 @@ program
 
 if ( !program.secret )
 {
-    program.help();
-    process.exit( 1 );
+    var fs = require( 'fs' );
+    if ( fs.existsSync( keyfilename ) )
+    {
+        var keyfile_contents = fs.readFileSync( keyfilename, 'utf8' );
+        program.secret = keyfile_contents.trim();
+    }
+    else
+    {
+        program.help();
+        process.exit( 1 );
+    }
 }
 
 var Storehouse = require( './storehouse' );

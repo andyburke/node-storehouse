@@ -174,3 +174,13 @@ So why was I frustrated? Because I am often a 1-man team. Amazon AWS services ar
 Check out this great post by Vikrum Nijjar about switching from S3 to Fastly: https://www.firebase.com/blog/2012-07-30-making-the-switch-from-amazon-cloudfront-to-fastly.html
 
 That post started me down this road. Except I needed a way for users to upload things to my server that I could then allow Fastly to cache. Hence: Storehouse.
+
+# CHANGELOG
+
+v0.0.2
+------
+- Allow key to be stored in a .storehouse_key file in the current directory.
+
+v0.0.1
+------
+- Initial release.
