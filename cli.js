@@ -16,6 +16,7 @@ program
     .option( '--sslkey <keyfile>', 'Specify an SSL key file.' )
     .option( '--sslcert <certfile>', 'Specify an SSL cert file.' )
     .option( '--quiet', 'Do not print out upload events.' )
+    .option( '--cors', 'Allow CORS cross-domain requests.' )
     .parse( process.argv );
 
 if ( !program.secret )
@@ -48,6 +49,7 @@ if ( program.nooverwrite )   options[ 'overwrite' ] = false;
 if ( program.directory )     options[ 'directory' ] = program.directory;
 if ( program.allowDownload ) options[ 'allowDownload' ] = true;
 if ( program.prefix )        options[ 'downloadPrefix' ] = program.prefix;
+if ( program.cors )          options[ 'cors' ] = true;
 if ( program.port )          listenOptions[ 'port' ] = program.port;
 if ( program.sslkey )        listenOptions.ssl[ 'key' ] = program.sslkey;
 if ( program.sslcert )       listenOptions.ssl[ 'cert' ] = program.sslcert;

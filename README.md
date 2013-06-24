@@ -177,6 +177,10 @@ That post started me down this road. Except I needed a way for users to upload t
 
 # CHANGELOG
 
+v0.0.3
+------
+- Allow CORS requests.
+
 v0.0.2
 ------
 - Allow key to be stored in a .storehouse_key file in the current directory.

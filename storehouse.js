@@ -38,6 +38,23 @@ Storehouse.prototype.attach = function( app ) {
         app.use( self.options.downloadPrefix, staticMiddleware );
     }
     
+    if ( self.options.cors )
+    {
+        app.all( self.options.url, function( request, response, next ) {
+            response.header( 'Access-Control-Allow-Origin', '*' );
+            response.header( 'Access-Control-Allow-Methods', 'POST' );
+            response.header( 'Access-Control-Allow-Headers', '*' );
+        
+            if ( request.method === 'OPTIONS' )
+            {
+                response.send( 200 );
+                return;
+            }
+            
+            next();
+        });
+    }
+    
     app.post( self.options.url, express.bodyParser(), function( request, response ) {
         if ( !request.files || !request.files[ 'file' ] )
         {
