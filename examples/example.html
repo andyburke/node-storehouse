@@ -1,13 +1,24 @@
 <html>
     <body>
-        <form id="testform" action="/testupload" method="post">
-            Path: <input id="path" type="text" name="path" />
+        <form id="uploadform" action="/upload" method="post">
+            Path: <input data-field="path" type="text" name="path" />
             <br/>
-            File: <input id="file" type="file" name="file" />
+            File: <input data-field="file" type="file" name="file" />
             <br/>
-            <input type="submit" name="submit" />
+            <input type="submit" name="upload" value="Upload" />
         </form>
-        
+
+        <hr/>
+
+        <form id="fetchform" action="/fetch" method="post">
+            URL to fetch: <input data-field="url" type="text" name="url" />
+            <br/>
+            Path: <input data-field="path" type="text" name="path" />
+            <br/>
+            <input type="submit" name="fetch" value="Fetch" />
+        </form>
+
+            
         <script type="text/javascript">
             // include SHA1 implementation
             /*
@@ -28,16 +39,16 @@
             
 
             // example upload handling            
-            var form = document.getElementById( 'testform' );
+            var uploadform = document.getElementById( 'uploadform' );
             
-            form.addEventListener( 'submit', function( event ) {
+            uploadform.addEventListener( 'submit', function( event ) {
                 event.stopPropagation();
                 event.preventDefault();
                 
-                var pathInput = document.getElementById( 'path' );
+                var pathInput = uploadform.querySelector( '[data-field="path"]' );
                 var path = pathInput.value;
                 
-                var fileInput = document.getElementById( 'file' );
+                var fileInput = uploadform.querySelector( '[data-field="file"]' );
                 var file = fileInput.files[ 0 ];
                 
                 // you would not want to leak your secret key like this, but we'll do it here for the example
@@ -49,7 +60,7 @@
                 var formData = new FormData();
  
                 formData.append( 'path', path );
-                formData.append( 'signature', signature );
+                formData.append( 'signature', signature.toString() );
                 formData.append( 'file', file );
              
                 var xhr = new XMLHttpRequest();
@@ -84,7 +95,61 @@
                    alert( 'Aborted!' );
                 }, false );
             
-                xhr.open( 'POST', form.action, true );
+                xhr.open( 'POST', uploadform.action, true );
+                xhr.send( formData );                
+            });
+            
+            // example fetch handling
+            // example upload handling            
+            var fetchform = document.getElementById( 'fetchform' );
+            
+            fetchform.addEventListener( 'submit', function( event ) {
+                event.stopPropagation();
+                event.preventDefault();
+                
+                var urlInput = fetchform.querySelector( '[data-field="url"]' );
+                var url = urlInput.value;
+
+                var pathInput = fetchform.querySelector( '[data-field="path"]' );
+                var path = pathInput.value;
+                
+                // you would not want to leak your secret key like this, but we'll do it here for the example
+                //
+                // normally, you would make a request to your service asking for permission to upload this file
+                // you could then decide if they were a valid user, etc. and generate a signature for the upload
+                var signature = CryptoJS.SHA1( url + path + 'this is the secret key' );
+                
+                var formData = new FormData();
+ 
+                formData.append( 'url', url );
+                formData.append( 'path', path );
+                formData.append( 'signature', signature.toString() );
+             
+                var xhr = new XMLHttpRequest();
+                
+                xhr.onreadystatechange = function() {
+                    if ( xhr.readyState == 4 ) // complete
+                    {
+                        if ( xhr.status < 200 || xhr.status >= 400 )
+                        {
+                            alert( xhr.responseText );
+                        }
+                    }
+                }
+             
+                xhr.addEventListener( 'load', function() {
+                    alert( 'Done!' );
+                }, false );
+                 
+                xhr.addEventListener( 'error', function( errorEvent ) {
+                   alert( errorEvent );
+                }, false );
+                
+                xhr.addEventListener( 'abort', function() {
+                   alert( 'Aborted!' );
+                }, false );
+            
+                xhr.open( 'POST', fetchform.action, true );
                 xhr.send( formData );                
             });
         </script>

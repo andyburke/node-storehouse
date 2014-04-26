@@ -8,7 +8,8 @@ program
     .usage( '[options]' )
     .option( '-s, --secret <secret key>', 'Specify the secret key. If this is not specifed, storehouse will check for a ' + keyfilename + ' file in the current directory. A key *must* be specified using this option or with a key file.' )
     .option( '--nooverwrite', 'Do not allow files to be overwritten.' )
-    .option( '--url <url>', 'Specify the upload url. Eg: --url "/uploadfile"  Default: /upload' )
+    .option( '--uploadurl <url>', 'Specify the upload url. Eg: --uploadurl "/uploadfile"  Default: /upload' )
+    .option( '--fetchurl <url>', 'Specify the fetch url. Eg: --fetchurl "/fetchfile"  Default: /fetch' )
     .option( '-d, --directory <path>', 'Specify the location to store files. Eg: --directory ./files  Default: ./' )
     .option( '--allowDownload', 'Allow file downloads. Default: off' )
     .option( '--prefix <prefix>', 'Specify the prefix for downloading files. Eg: --prefix /files  Default: /' )
@@ -44,21 +45,28 @@ var listenOptions = {
     ssl: {}
 }
 
-if ( program.url )           options[ 'url' ] = program.url;
-if ( program.nooverwrite )   options[ 'overwrite' ] = false;
-if ( program.directory )     options[ 'directory' ] = program.directory;
-if ( program.allowDownload ) options[ 'allowDownload' ] = true;
-if ( program.prefix )        options[ 'downloadPrefix' ] = program.prefix;
-if ( program.cors )          options[ 'cors' ] = true;
-if ( program.port )          listenOptions[ 'port' ] = program.port;
-if ( program.sslkey )        listenOptions.ssl[ 'key' ] = program.sslkey;
-if ( program.sslcert )       listenOptions.ssl[ 'cert' ] = program.sslcert;
+if ( program.uploadurl )     options.uploadurl = program.uploadurl;
+if ( program.fetchurl )      options.fetchurl = program.fetchurl;
+if ( program.nooverwrite )   options.overwrite = false;
+if ( program.directory )     options.directory = program.directory;
+if ( program.allowDownload ) options.allowDownload = true;
+if ( program.prefix )        options.downloadPrefix = program.prefix;
+if ( program.cors )          options.cors = true;
+if ( program.port )          listenOptions.port = program.port;
+if ( program.sslkey )        listenOptions.ssl.key = program.sslkey;
+if ( program.sslcert )       listenOptions.ssl.cert = program.sslcert;
 
 var storehouse = new Storehouse( options ).listen( listenOptions );
 
 if ( !program.quiet )
 {
+    console.log( "Storehouse started..." );
+    
     storehouse.on( 'uploaded', function( event ) {
         console.log( humanize.date( 'c' ) + ' uploaded: ' + event.path + ' (' + event.location + ') ' + humanize.filesize( event.size ) );
-    });
+    } );
+
+    storehouse.on( 'fetched', function( event ) {
+        console.log( humanize.date( 'c' ) + ' fetched url "' + event.url + '": ' + event.path + ' (' + event.location + ') ' + humanize.filesize( event.size ) );
+    } );
 }

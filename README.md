@@ -177,6 +177,12 @@ That post started me down this road. Except I needed a way for users to upload t
 
 # CHANGELOG
 
+v0.0.4
+------
+- Allow for fetching URLs in addition to uploading files.
+- Upgrade to Express 4.x
+- Add fetching example to examples/
+
 v0.0.3
 ------
 - Allow CORS requests.
