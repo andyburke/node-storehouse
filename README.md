@@ -177,6 +177,10 @@ That post started me down this road. Except I needed a way for users to upload t
 
 # CHANGELOG
 
+v0.0.6
+------
+- Need to check if there are actually requested headers... :(
+
 v0.0.5
 ------
 - CORS fixes
