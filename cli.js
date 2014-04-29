@@ -13,11 +13,12 @@ program
     .option( '-d, --directory <path>', 'Specify the location to store files. Eg: --directory ./files  Default: ./' )
     .option( '--allowDownload', 'Allow file downloads. Default: off' )
     .option( '--prefix <prefix>', 'Specify the prefix for downloading files. Eg: --prefix /files  Default: /' )
+    .option( '--cors', 'Allow CORS cross-domain requests.' )
+    .option( '--cors_origin', 'Set the allowed origin(s) for CORS. Default: *' )
     .option( '-p, --port <port>', 'Specify the port to listen on. Default: 8888' )
     .option( '--sslkey <keyfile>', 'Specify an SSL key file.' )
     .option( '--sslcert <certfile>', 'Specify an SSL cert file.' )
     .option( '--quiet', 'Do not print out upload events.' )
-    .option( '--cors', 'Allow CORS cross-domain requests.' )
     .parse( process.argv );
 
 if ( !program.secret )
@@ -52,6 +53,7 @@ if ( program.directory )     options.directory = program.directory;
 if ( program.allowDownload ) options.allowDownload = true;
 if ( program.prefix )        options.downloadPrefix = program.prefix;
 if ( program.cors )          options.cors = true;
+if ( program.cors_origin )   options.origin = program.cors_origin;
 if ( program.port )          listenOptions.port = program.port;
 if ( program.sslkey )        listenOptions.ssl.key = program.sslkey;
 if ( program.sslcert )       listenOptions.ssl.cert = program.sslcert;

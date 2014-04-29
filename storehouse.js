@@ -20,7 +20,8 @@ var defaults = {
     directory: './',
     allowDownload: false,
     downloadPrefix: '/',
-    overwrite: true
+    overwrite: true,
+    origin: '*'
 };
 
 module.exports = Storehouse;
@@ -50,9 +51,9 @@ Storehouse.prototype.attach = function( app ) {
     }
     
     function AllowCORS( request, response, next ) {
-        response.header( 'Access-Control-Allow-Origin', '*' );
+        response.header( 'Access-Control-Allow-Origin', self.options.origin );
         response.header( 'Access-Control-Allow-Methods', 'POST' );
-        response.header( 'Access-Control-Allow-Headers', '*' );
+        response.header( 'Access-Control-Allow-Headers', request.headers[ 'access-control-request-headers' ] );
     
         if ( request.method === 'OPTIONS' )
         {

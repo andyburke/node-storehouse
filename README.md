@@ -177,6 +177,12 @@ That post started me down this road. Except I needed a way for users to upload t
 
 # CHANGELOG
 
+v0.0.5
+------
+- CORS fixes
+  - reflect back access-control-request-headers
+  - allow restricing the CORS origin with an option
+
 v0.0.4
 ------
 - Allow for fetching URLs in addition to uploading files.
