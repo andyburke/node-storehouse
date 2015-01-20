@@ -62,10 +62,18 @@ var storehouse = new Storehouse( options ).listen( listenOptions );
 
 if ( !program.quiet )
 {
-    console.log( "Storehouse started..." );
+    console.log( '*** Storehouse started ( ' + humanize.date( 'c' ) + ' )' );
+
+    storehouse.on( 'upload-requested', function( event ) {
+        console.log( humanize.date( 'c' ) + ' upload REQUESTED: ' + event.path + ' (' + event.location + ')' );
+    } );
 
     storehouse.on( 'uploaded', function( event ) {
         console.log( humanize.date( 'c' ) + ' uploaded: ' + event.path + ' (' + event.location + ') ' + humanize.filesize( event.size ) );
+    } );
+
+    storehouse.on( 'fetch-requested', function( event ) {
+        console.log( humanize.date( 'c' ) + ' url-fetch REQUESTED: "' + event.url + '": ' + event.path + ' (' + event.location + ')' );
     } );
 
     storehouse.on( 'fetched', function( event ) {
