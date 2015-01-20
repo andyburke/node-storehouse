@@ -75,18 +75,63 @@ Storehouse.prototype.attach = function( app ) {
     }
 
     app.post( self.options.uploadURL, bodyParser(), multer(), function( request, response, next ) {
+        var filename = path.normalize( self.options.directory + path.sep + request.body.path );
+        var directory = path.dirname( filename );
+        var fileInfo = request.files.file;
+
+        fs.stat( filename, function( error ) {
+            if ( error )
+            {
+                console.error( error );
+            }
+
+            self.emit( 'upload-requested', {
+                path: request.body.path,
+                directory: directory,
+                filename: filename,
+                location: path.resolve( filename ),
+                type: fileInfo.type
+            } );
+        } );
+
         self.AcceptUpload( request, response, next );
     } );
 
     app.post( self.options.fetchURL, bodyParser(), multer(), function( request, response, next ) {
+        var filename = path.normalize( self.options.directory + path.sep + request.body.path );
+        var directory = path.dirname( filename );
+
+        fs.stat( filename, function( error ) {
+            if ( error )
+            {
+                console.error( error );
+            }
+
+            mimeMagic.detectFile( filename, function( mimeError, mimeType ) {
+                if ( mimeError )
+                {
+                    console.error( mimeError );
+                }
+
+                self.emit( 'fetch-requested', {
+                    url: request.body.url,
+                    path: request.body.path,
+                    directory: directory,
+                    filename: filename,
+                    location: path.resolve( filename ),
+                    type: mimeType
+                } );
+            } );
+        } );
+
         self.Fetch( request, response, next );
     } );
-}
+};
 
 Storehouse.prototype.AcceptUpload = function( request, response ) {
     var self = this;
 
-    if ( !request.files || !request.files[ 'file' ] )
+    if ( !request.files || !request.files.file )
     {
         response.json( { error: 'file missing', message: 'No file present in request.' }, 400 );
         return;
@@ -104,7 +149,7 @@ Storehouse.prototype.AcceptUpload = function( request, response ) {
         return;
     }
 
-    var fileInfo = request.files[ 'file' ];
+    var fileInfo = request.files.file;
     var signature = crypto.createHash( 'sha1' ).update( request.body.path + fileInfo.mimetype + self.options.secret ).digest( 'hex' );
 
     if ( signature != request.body.signature )
@@ -357,4 +402,4 @@ Storehouse.prototype.listen = function( _options ) {
     } );
 
     return self;
-}
+};
