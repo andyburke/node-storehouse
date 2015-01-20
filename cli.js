@@ -63,7 +63,7 @@ var storehouse = new Storehouse( options ).listen( listenOptions );
 if ( !program.quiet )
 {
     console.log( "Storehouse started..." );
-    
+
     storehouse.on( 'uploaded', function( event ) {
         console.log( humanize.date( 'c' ) + ' uploaded: ' + event.path + ' (' + event.location + ') ' + humanize.filesize( event.size ) );
     } );
