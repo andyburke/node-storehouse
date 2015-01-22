@@ -79,19 +79,12 @@ Storehouse.prototype.attach = function( app ) {
         var directory = path.dirname( filename );
         var fileInfo = request.files.file;
 
-        fs.stat( filename, function( error ) {
-            if ( error )
-            {
-                console.error( error );
-            }
-
-            self.emit( 'upload-requested', {
-                path: request.body.path,
-                directory: directory,
-                filename: filename,
-                location: path.resolve( filename ),
-                type: fileInfo.type
-            } );
+        self.emit( 'upload-requested', {
+            path: request.body.path,
+            directory: directory,
+            filename: filename,
+            location: path.resolve( filename ),
+            type: fileInfo.type
         } );
 
         self.AcceptUpload( request, response, next );
@@ -101,26 +94,19 @@ Storehouse.prototype.attach = function( app ) {
         var filename = path.normalize( self.options.directory + path.sep + request.body.path );
         var directory = path.dirname( filename );
 
-        fs.stat( filename, function( error ) {
-            if ( error )
+        mimeMagic.detectFile( filename, function( mimeError, mimeType ) {
+            if ( mimeError )
             {
-                console.error( error );
+                console.error( mimeError );
             }
 
-            mimeMagic.detectFile( filename, function( mimeError, mimeType ) {
-                if ( mimeError )
-                {
-                    console.error( mimeError );
-                }
-
-                self.emit( 'fetch-requested', {
-                    url: request.body.url,
-                    path: request.body.path,
-                    directory: directory,
-                    filename: filename,
-                    location: path.resolve( filename ),
-                    type: mimeType
-                } );
+            self.emit( 'fetch-requested', {
+                url: request.body.url,
+                path: request.body.path,
+                directory: directory,
+                filename: filename,
+                location: path.resolve( filename ),
+                type: mimeType
             } );
         } );
 
