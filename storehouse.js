@@ -32,8 +32,7 @@ function Storehouse( _options ) {
 
     self.options = extend( {}, defaults, _options );
 
-    if ( !self.options.secret )
-    {
+    if ( !self.options.secret ) {
         throw 'You must specify a secret.';
     }
 }
@@ -43,8 +42,7 @@ util.inherits( Storehouse, EventEmitter );
 Storehouse.prototype.attach = function( app ) {
     var self = this;
 
-    if ( self.options.allowDownload )
-    {
+    if ( self.options.allowDownload ) {
         var staticMiddleware = express.static( self.options.directory[ 0 ] == path.sep ? self.options.directory : ( process.cwd() + path.sep + self.options.directory ) );
 
         app.use( self.options.downloadPrefix, staticMiddleware );
@@ -54,13 +52,11 @@ Storehouse.prototype.attach = function( app ) {
         response.header( 'Access-Control-Allow-Origin', self.options.origin );
         response.header( 'Access-Control-Allow-Methods', 'POST' );
 
-        if ( !!request.headers[ 'access-control-request-headers' ] )
-        {
+        if ( !!request.headers[ 'access-control-request-headers' ] ) {
             response.header( 'Access-Control-Allow-Headers', request.headers[ 'access-control-request-headers' ] );
         }
 
-        if ( request.method === 'OPTIONS' )
-        {
+        if ( request.method === 'OPTIONS' ) {
             response.send( 200 );
             return;
         }
@@ -68,8 +64,7 @@ Storehouse.prototype.attach = function( app ) {
         next();
     }
 
-    if ( self.options.cors )
-    {
+    if ( self.options.cors ) {
         app.all( self.options.uploadURL, AllowCORS );
         app.all( self.options.fetchURL, AllowCORS );
     }
@@ -110,30 +105,38 @@ Storehouse.prototype.attach = function( app ) {
 Storehouse.prototype.AcceptUpload = function( request, response ) {
     var self = this;
 
-    if ( !request.files || !request.files.file )
-    {
-        response.json( { error: 'file missing', message: 'No file present in request.' }, 400 );
+    if ( !request.files || !request.files.file ) {
+        response.json( {
+            error: 'file missing',
+            message: 'No file present in request.'
+        }, 400 );
         return;
     }
 
-    if ( !request.body.path )
-    {
-        response.json( { error: 'path missing', message: 'No path specified in request.' }, 400 );
+    if ( !request.body.path ) {
+        response.json( {
+            error: 'path missing',
+            message: 'No path specified in request.'
+        }, 400 );
         return;
     }
 
-    if ( !request.body.signature )
-    {
-        response.json( { error: 'signature missing', message: 'No signature specified in request.' }, 400 );
+    if ( !request.body.signature ) {
+        response.json( {
+            error: 'signature missing',
+            message: 'No signature specified in request.'
+        }, 400 );
         return;
     }
 
     var fileInfo = request.files.file;
     var signature = crypto.createHash( 'sha1' ).update( request.body.path + fileInfo.mimetype + self.options.secret ).digest( 'hex' );
 
-    if ( signature != request.body.signature )
-    {
-        response.json( { error: 'invalid signature', message: 'Signature for this upload is invalid.' }, 400 );
+    if ( signature != request.body.signature ) {
+        response.json( {
+            error: 'invalid signature',
+            message: 'Signature for this upload is invalid.'
+        }, 400 );
         return;
     }
 
@@ -144,9 +147,12 @@ Storehouse.prototype.AcceptUpload = function( request, response ) {
         // check if the file exists and if we can overwrite it if it does
         function( callback ) {
             fs.exists( filename, function( exists ) {
-                if ( exists && !self.options.overwrite )
-                {
-                    callback( { error: 'file exists', message: 'The file you are trying to upload already exists and cannot be overwritten.', code: 400 } );
+                if ( exists && !self.options.overwrite ) {
+                    callback( {
+                        error: 'file exists',
+                        message: 'The file you are trying to upload already exists and cannot be overwritten.',
+                        code: 400
+                    } );
                     return;
                 }
 
@@ -157,9 +163,12 @@ Storehouse.prototype.AcceptUpload = function( request, response ) {
         // create the necessary directory structure
         function( callback ) {
             fs.mkdir( directory, '0755', true, function( error ) {
-                if ( error )
-                {
-                    callback( { error: 'error creating directory', message: error, code: 500 } );
+                if ( error ) {
+                    callback( {
+                        error: 'error creating directory',
+                        message: error,
+                        code: 500
+                    } );
                     return;
                 }
 
@@ -170,9 +179,12 @@ Storehouse.prototype.AcceptUpload = function( request, response ) {
         // move the uploaded file from its temp location to the target location
         function( callback ) {
             fs.rename( fileInfo.path, filename, function( error ) {
-                if ( error )
-                {
-                    callback( { error: 'error moving file', message: error, code: 500 } );
+                if ( error ) {
+                    callback( {
+                        error: 'error moving file',
+                        message: error,
+                        code: 500
+                    } );
                     return;
                 }
 
@@ -183,9 +195,12 @@ Storehouse.prototype.AcceptUpload = function( request, response ) {
         // set proper permissions on the uploaded file
         function( callback ) {
             fs.chmod( filename, '0644', function( error ) {
-                if ( error )
-                {
-                    callback( { error: 'error changing file permissions', message: error, code: 500 } );
+                if ( error ) {
+                    callback( {
+                        error: 'error changing file permissions',
+                        message: error,
+                        code: 500
+                    } );
                     return;
                 }
 
@@ -194,17 +209,17 @@ Storehouse.prototype.AcceptUpload = function( request, response ) {
         }
 
     ], function( error ) {
-        if ( error )
-        {
+        if ( error ) {
             response.json( error, error.code || 500 );
             return;
         }
 
-        response.json( { 'path': request.body.path } );
+        response.json( {
+            'path': request.body.path
+        } );
 
         fs.stat( filename, function( error, stats ) {
-            if ( error )
-            {
+            if ( error ) {
                 console.error( error );
             }
 
@@ -224,29 +239,37 @@ Storehouse.prototype.AcceptUpload = function( request, response ) {
 Storehouse.prototype.Fetch = function( request, response ) {
     var self = this;
 
-    if ( !request.body.url )
-    {
-        response.json( { error: 'url missing', message: 'No url to fetch specified in request.' }, 400 );
+    if ( !request.body.url ) {
+        response.json( {
+            error: 'url missing',
+            message: 'No url to fetch specified in request.'
+        }, 400 );
         return;
     }
 
-    if ( !request.body.path )
-    {
-        response.json( { error: 'path missing', message: 'No path specified in request.' }, 400 );
+    if ( !request.body.path ) {
+        response.json( {
+            error: 'path missing',
+            message: 'No path specified in request.'
+        }, 400 );
         return;
     }
 
-    if ( !request.body.signature )
-    {
-        response.json( { error: 'signature missing', message: 'No signature specified in request.' }, 400 );
+    if ( !request.body.signature ) {
+        response.json( {
+            error: 'signature missing',
+            message: 'No signature specified in request.'
+        }, 400 );
         return;
     }
 
     var signature = crypto.createHash( 'sha1' ).update( request.body.url + request.body.path + self.options.secret ).digest( 'hex' );
 
-    if ( signature != request.body.signature )
-    {
-        response.json( { error: 'invalid signature', message: 'Signature for this fetch request is invalid.' }, 400 );
+    if ( signature != request.body.signature ) {
+        response.json( {
+            error: 'invalid signature',
+            message: 'Signature for this fetch request is invalid.'
+        }, 400 );
         return;
     }
 
@@ -257,9 +280,12 @@ Storehouse.prototype.Fetch = function( request, response ) {
         // check if the file exists and if we can overwrite it if it does
         function( callback ) {
             fs.exists( filename, function( exists ) {
-                if ( exists && !self.options.overwrite )
-                {
-                    callback( { error: 'file exists', message: 'The path you are trying to fetch to already exists and cannot be overwritten.', code: 400 } );
+                if ( exists && !self.options.overwrite ) {
+                    callback( {
+                        error: 'file exists',
+                        message: 'The path you are trying to fetch to already exists and cannot be overwritten.',
+                        code: 400
+                    } );
                     return;
                 }
 
@@ -270,9 +296,12 @@ Storehouse.prototype.Fetch = function( request, response ) {
         // create the necessary directory structure
         function( callback ) {
             fs.mkdir( directory, '0755', true, function( error ) {
-                if ( error )
-                {
-                    callback( { error: 'error creating directory', message: error, code: 500 } );
+                if ( error ) {
+                    callback( {
+                        error: 'error creating directory',
+                        message: error,
+                        code: 500
+                    } );
                     return;
                 }
 
@@ -297,9 +326,12 @@ Storehouse.prototype.Fetch = function( request, response ) {
         // set proper permissions on the uploaded file
         function( callback ) {
             fs.chmod( filename, '0644', function( error ) {
-                if ( error )
-                {
-                    callback( { error: 'error changing file permissions', message: error, code: 500 } );
+                if ( error ) {
+                    callback( {
+                        error: 'error changing file permissions',
+                        message: error,
+                        code: 500
+                    } );
                     return;
                 }
 
@@ -308,23 +340,22 @@ Storehouse.prototype.Fetch = function( request, response ) {
         },
 
     ], function( error ) {
-        if ( error )
-        {
+        if ( error ) {
             response.json( error, error.code || 500 );
             return;
         }
 
-        response.json( { 'path': request.body.path } );
+        response.json( {
+            'path': request.body.path
+        } );
 
         fs.stat( filename, function( error, stats ) {
-            if ( error )
-            {
+            if ( error ) {
                 console.error( error );
             }
 
             mimeMagic.detectFile( filename, function( mimeError, mimeType ) {
-                if ( mimeError )
-                {
+                if ( mimeError ) {
                     console.error( mimeError );
                 }
 
@@ -357,9 +388,8 @@ Storehouse.prototype.listen = function( _options ) {
     var app = express();
     self.attach( app );
 
-    if ( options.ssl && options.ssl.key && options.ssl.cert )
-    {
-        var httpsServer = https.createServer({
+    if ( options.ssl && options.ssl.key && options.ssl.cert ) {
+        var httpsServer = https.createServer( {
             key: fs.readFileSync( options.ssl.key ),
             cert: fs.readFileSync( options.ssl.cert ),
             ca: options.ssl.ca || []
