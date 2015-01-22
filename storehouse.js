@@ -72,10 +72,34 @@ Storehouse.prototype.attach = function( app ) {
     }
 
     app.post( self.options.uploadURL, bodyParser(), multer(), function( request, response, next ) {
+        var filename = path.normalize( self.options.directory + path.sep + request.body.path );
+        var directory = path.dirname( filename );
+        var fileInfo = request.files.file;
+
+        self.emit( 'upload-requested', {
+            path: request.body.path,
+            directory: directory,
+            filename: filename,
+            location: path.resolve( filename ),
+            type: fileInfo.mimetype,
+            encoding: fileInfo.encoding
+        } );
+
         self.AcceptUpload( request, response, next );
     } );
 
     app.post( self.options.fetchURL, bodyParser(), multer(), function( request, response, next ) {
+        var filename = path.normalize( self.options.directory + path.sep + request.body.path );
+        var directory = path.dirname( filename );
+
+        self.emit( 'fetch-requested', {
+            url: request.body.url,
+            path: request.body.path,
+            directory: directory,
+            filename: filename,
+            location: path.resolve( filename )
+        } );
+
         self.Fetch( request, response, next );
     } );
 };
@@ -169,7 +193,8 @@ Storehouse.prototype.AcceptUpload = function( request, response ) {
                 filename: filename,
                 location: path.resolve( filename ),
                 size: stats ? stats.size : -1,
-                type: fileInfo.type
+                type: fileInfo.mimetype,
+                encoding: fileInfo.encoding
             } );
         } );
     } );

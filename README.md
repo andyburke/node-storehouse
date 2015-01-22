@@ -28,13 +28,13 @@ If you're already using express, you can attach a storehouse directly to your ap
 ```javascript
 var Storehouse = require( 'storehouse' );
 
-var storehouse = new Storehouse({
+var storehouse = new Storehouse( {
     url: '/fileupload',
     directory: './files',
     allowDownload: true,
     downloadPrefix: '/files',
     secret: 'this is the secret key'
-});
+} );
 
 storehouse.attach( app ); // attach to an existing express app
 ```
@@ -42,22 +42,22 @@ storehouse.attach( app ); // attach to an existing express app
 If you don't already have an express app, you can tell storehouse to listen on its own:
 
 ```javascript
-storehouse.listen({
-    port: 8888 
-});
+storehouse.listen( {
+    port: 8888
+} );
 ```
 
 Storehouse also supports SSL:
 
 ```javascript
-storehouse.listen({
+storehouse.listen( {
     port: 8888,
     ssl: {
         key: './path/to/ssl.key',
         cert: './path/to/ssl.crt',
         port: 4443
     }
-});
+} );
 ```
 
 ### As a standalone server:
@@ -110,7 +110,7 @@ Good question! Storehouse is mostly intended to be used as a part of an existing
 In that service, you should expose a way for a user to obtain a signature for a file they'd like to upload. In that case, you can verify they have permission to upload and you can keep your secret key secret. Here's an example of how you might usually handle a file upload in this way:
 
 ```javascript
-ajaxCall({
+ajaxCall( {
     url: '/api/fileuploadsignature',
     type: 'POST',
     data: {
@@ -120,54 +120,52 @@ ajaxCall({
     success: function( signature ) {
         // here your API has given us back a signature that allows this file to be uploaded,
         // now we can send the file to the server
-        
+
         var formData = new FormData();
 
         formData.append( 'path', path );
         formData.append( 'signature', signature );
         formData.append( 'file', file ); // this would be from a file input in a form, for example
-     
+
         var xhr = new XMLHttpRequest();
-        
+
         xhr.onreadystatechange = function() {
             if ( xhr.readyState == 4 ) // complete
             {
-                if ( xhr.status < 200 || xhr.status >= 400 )
-                {
+                if ( xhr.status < 200 || xhr.status >= 400 ) {
                     alert( xhr.responseText ); // oops, error!
                 }
             }
         }
-     
+
         xhr.upload.addEventListener( 'progress', function( progressEvent ) {
-            if ( progressEvent.lengthComputable )
-            {
+            if ( progressEvent.lengthComputable ) {
                 var percentComplete = Math.floor( ( progressEvent.loaded / progressEvent.total ) * 100 );
                 console.log( percentComplete ); // let's print the progress of our upload to the console
             }
-        }, false);
-         
+        }, false );
+
         xhr.addEventListener( 'load', function() {
             alert( 'Done!' );
         }, false );
-         
+
         xhr.addEventListener( 'error', function( error ) {
-           alert( error );
+            alert( error );
         }, false );
-        
+
         xhr.addEventListener( 'abort', function() {
-           alert( 'Aborted!' );
+            alert( 'Aborted!' );
         }, false );
-    
+
         xhr.open( 'POST', '/fileupload', true ); // open a post to whatever URL you've configured Storehouse to listen to
         xhr.send( formData ); // send the file
     }
-});
+} );
 ```
 
 ## Why?
 
-I created this because I became fustrated working with Amazon S3/CloudFront. Don't get me wrong, S3/CloudFront is great: tough to beat on price and there's no question of it handling scaling.
+I created this because I became frustrated working with Amazon S3/CloudFront. Don't get me wrong, S3/CloudFront is great: tough to beat on price and there's no question of it handling scaling.
 
 So why was I frustrated? Because I am often a 1-man team. Amazon AWS services are great, but they're really meant for larger-scale operations. Sometimes you just need to upload some files and not have to try to figure out all the nooks and crannies that AWS provides for managing a huge enterprise. And Amazon's approach is essentially that you write your own tooling.
 
@@ -177,6 +175,14 @@ That post started me down this road. Except I needed a way for users to upload t
 
 # CHANGELOG
 
+v0.0.7
+------
+- Improved logging
+  - fetch- and upload-requests are now logged
+  - file mime type added to logging output
+  - file encoding added to logging output
+- Added .jsbeautifyrc and .jshintrc files to project
+
 v0.0.6
 ------
 - Need to check if there are actually requested headers... :(
@@ -185,7 +191,7 @@ v0.0.5
 ------
 - CORS fixes
   - reflect back access-control-request-headers
-  - allow restricing the CORS origin with an option
+  - allow restricting the CORS origin with an option
 
 v0.0.4
 ------
