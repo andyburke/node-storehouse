@@ -44,7 +44,7 @@ var options = {
 
 var listenOptions = {
     ssl: {}
-}
+};
 
 if ( program.uploadurl )     options.uploadurl = program.uploadurl;
 if ( program.fetchurl )      options.fetchurl = program.fetchurl;
@@ -65,11 +65,11 @@ if ( !program.quiet )
     console.log( '*** Storehouse started ( ' + humanize.date( 'c' ) + ' )' );
 
     storehouse.on( 'upload-requested', function( event ) {
-        console.log( humanize.date( 'c' ) + ' upload REQUESTED: ' + event.path + ' (' + event.location + ')' );
+        console.log( humanize.date( 'c' ) + ' upload REQUESTED: ' + event.path + ' (' + event.location + ') ' + event.type + ' (encoding: ' + event.encoding + ')');
     } );
 
     storehouse.on( 'uploaded', function( event ) {
-        console.log( humanize.date( 'c' ) + ' uploaded: ' + event.path + ' (' + event.location + ') ' + humanize.filesize( event.size ) );
+        console.log( humanize.date( 'c' ) + ' uploaded: ' + event.path + ' (' + event.location + ') ' + humanize.filesize( event.size ) + ' ' + event.type + ' (encoding: ' + event.encoding + ')');
     } );
 
     storehouse.on( 'fetch-requested', function( event ) {
@@ -77,6 +77,6 @@ if ( !program.quiet )
     } );
 
     storehouse.on( 'fetched', function( event ) {
-        console.log( humanize.date( 'c' ) + ' fetched url "' + event.url + '": ' + event.path + ' (' + event.location + ') ' + humanize.filesize( event.size ) );
+        console.log( humanize.date( 'c' ) + ' fetched url "' + event.url + '": ' + event.path + ' (' + event.location + ') ' + humanize.filesize( event.size ) + ' ' + event.type );
     } );
 }
