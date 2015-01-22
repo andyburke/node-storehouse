@@ -95,13 +95,20 @@ This would start a Storehouse server with the secret key "this is the secret key
 
 That's where the secret key comes in: to upload you must send a signature along with the file which Storehouse will validate.
 
-The signature is a SHA1 of some information about the file plus the secret key. Specifically:
+The signature is a SHA1 of the sorted key/value pairs in your request, plus a secret key:
 
 ```javascript
-var signature = crypto.createHash( 'sha1' ).update( request.body.path + fileInfo.type + self.options.secret ).digest( 'hex' );
+var verification = '';
+for ( var key in Object.keys( opts ).sort() ) {
+    verification += key + '=' + opts[ key ] + '&';
+}
+
+verification += 'secret=this is the secret key';
+
+var signature = CryptoJS.SHA1( verification );    
 ```
 
-The signature you send with the file must match this signature composed from the path you're trying to upload to, the file's mime type and your secret key.
+The signature you send with the file must match this signature composed from the sorted key/value pairs of your request body plus the secret key.
 
 ## That's great, but how do I generate a signature without leaking my secret key?
 
@@ -124,8 +131,8 @@ ajaxCall( {
         var formData = new FormData();
 
         formData.append( 'path', path );
-        formData.append( 'signature', signature );
         formData.append( 'file', file ); // this would be from a file input in a form, for example
+        formData.append( 'signature', signature );
 
         var xhr = new XMLHttpRequest();
 
@@ -174,6 +181,11 @@ Check out this great post by Vikrum Nijjar about switching from S3 to Fastly: ht
 That post started me down this road. Except I needed a way for users to upload things to my server that I could then allow Fastly to cache. Hence: Storehouse.
 
 # CHANGELOG
+
+v1.0.0
+------
+- Code cleanup/refactor
+- Change signature generation to be based on key order
 
 v0.0.7
 ------
