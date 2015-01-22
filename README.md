@@ -43,7 +43,7 @@ If you don't already have an express app, you can tell storehouse to listen on i
 
 ```javascript
 storehouse.listen({
-    port: 8888 
+    port: 8888
 });
 ```
 
@@ -120,15 +120,15 @@ ajaxCall({
     success: function( signature ) {
         // here your API has given us back a signature that allows this file to be uploaded,
         // now we can send the file to the server
-        
+
         var formData = new FormData();
 
         formData.append( 'path', path );
         formData.append( 'signature', signature );
         formData.append( 'file', file ); // this would be from a file input in a form, for example
-     
+
         var xhr = new XMLHttpRequest();
-        
+
         xhr.onreadystatechange = function() {
             if ( xhr.readyState == 4 ) // complete
             {
@@ -138,7 +138,7 @@ ajaxCall({
                 }
             }
         }
-     
+
         xhr.upload.addEventListener( 'progress', function( progressEvent ) {
             if ( progressEvent.lengthComputable )
             {
@@ -146,19 +146,19 @@ ajaxCall({
                 console.log( percentComplete ); // let's print the progress of our upload to the console
             }
         }, false);
-         
+
         xhr.addEventListener( 'load', function() {
             alert( 'Done!' );
         }, false );
-         
+
         xhr.addEventListener( 'error', function( error ) {
            alert( error );
         }, false );
-        
+
         xhr.addEventListener( 'abort', function() {
            alert( 'Aborted!' );
         }, false );
-    
+
         xhr.open( 'POST', '/fileupload', true ); // open a post to whatever URL you've configured Storehouse to listen to
         xhr.send( formData ); // send the file
     }
@@ -176,6 +176,13 @@ Check out this great post by Vikrum Nijjar about switching from S3 to Fastly: ht
 That post started me down this road. Except I needed a way for users to upload things to my server that I could then allow Fastly to cache. Hence: Storehouse.
 
 # CHANGELOG
+
+v0.0.7
+------
+- Improved logging
+  - fetch- and upload-requests are now logged
+  - file mime type added to logging output
+  - file encoding added to logging output
 
 v0.0.6
 ------
