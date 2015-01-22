@@ -94,20 +94,12 @@ Storehouse.prototype.attach = function( app ) {
         var filename = path.normalize( self.options.directory + path.sep + request.body.path );
         var directory = path.dirname( filename );
 
-        mimeMagic.detectFile( filename, function( mimeError, mimeType ) {
-            if ( mimeError )
-            {
-                console.error( mimeError );
-            }
-
-            self.emit( 'fetch-requested', {
-                url: request.body.url,
-                path: request.body.path,
-                directory: directory,
-                filename: filename,
-                location: path.resolve( filename ),
-                type: mimeType
-            } );
+        self.emit( 'fetch-requested', {
+            url: request.body.url,
+            path: request.body.path,
+            directory: directory,
+            filename: filename,
+            location: path.resolve( filename )
         } );
 
         self.Fetch( request, response, next );
