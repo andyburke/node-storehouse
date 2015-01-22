@@ -44,8 +44,8 @@ var listenOptions = {
     ssl: {}
 };
 
-if ( program.uploadurl )     options.uploadurl = program.uploadurl;
-if ( program.fetchurl )      options.fetchurl = program.fetchurl;
+if ( program.uploadurl )     options.uploadURL = program.uploadurl;
+if ( program.fetchurl )      options.fetchURL = program.fetchurl;
 if ( program.nooverwrite )   options.overwrite = false;
 if ( program.directory )     options.directory = program.directory;
 if ( program.allowDownload ) options.allowDownload = true;
