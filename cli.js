@@ -44,17 +44,17 @@ var listenOptions = {
     ssl: {}
 };
 
-if ( program.uploadurl ) options.uploadurl = program.uploadurl;
-if ( program.fetchurl ) options.fetchurl = program.fetchurl;
-if ( program.nooverwrite ) options.overwrite = false;
-if ( program.directory ) options.directory = program.directory;
+if ( program.uploadurl )     options.uploadurl = program.uploadurl;
+if ( program.fetchurl )      options.fetchurl = program.fetchurl;
+if ( program.nooverwrite )   options.overwrite = false;
+if ( program.directory )     options.directory = program.directory;
 if ( program.allowDownload ) options.allowDownload = true;
-if ( program.prefix ) options.downloadPrefix = program.prefix;
-if ( program.cors ) options.cors = true;
-if ( program.cors_origin ) options.origin = program.cors_origin;
-if ( program.port ) listenOptions.port = program.port;
-if ( program.sslkey ) listenOptions.ssl.key = program.sslkey;
-if ( program.sslcert ) listenOptions.ssl.cert = program.sslcert;
+if ( program.prefix )        options.downloadPrefix = program.prefix;
+if ( program.cors )          options.cors = true;
+if ( program.cors_origin )   options.origin = program.cors_origin;
+if ( program.port )          listenOptions.port = program.port;
+if ( program.sslkey )        listenOptions.ssl.key = program.sslkey;
+if ( program.sslcert )       listenOptions.ssl.cert = program.sslcert;
 
 var storehouse = new Storehouse( options ).listen( listenOptions );
 
