@@ -84,7 +84,8 @@ Storehouse.prototype.attach = function( app ) {
             directory: directory,
             filename: filename,
             location: path.resolve( filename ),
-            type: fileInfo.type
+            type: fileInfo.mimetype,
+            encoding: fileInfo.encoding
         } );
 
         self.AcceptUpload( request, response, next );
@@ -213,7 +214,8 @@ Storehouse.prototype.AcceptUpload = function( request, response ) {
                 filename: filename,
                 location: path.resolve( filename ),
                 size: stats ? stats.size : -1,
-                type: fileInfo.type
+                type: fileInfo.mimetype,
+                encoding: fileInfo.encoding
             } );
         } );
     } );
