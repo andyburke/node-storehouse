@@ -107,18 +107,19 @@ Storehouse.prototype.attach = function( app ) {
 Storehouse.prototype._getSignature = function( request ) {
     var self = this;
 
-    var verification = '';
-    for ( var key in Object.keys( request.body ).sort() ) {
+    var parts = [];
+    var keys = Object.keys( request.body ).sort();
+    keys.forEach( function( key ) {
         if ( key === 'signature' ) {
-            continue;
+            return;
         }
 
-        verification += key + '=' + request.body[ key ] + '&';
-    }
+        parts.push( key + '=' + request.body[ key ] );
+    } );
 
-    verification += 'secret=' + self.options.secret;
+    parts.push( 'secret=' + self.options.secret );
 
-    return crypto.createHash( 'sha1' ).update( verification ).digest( 'hex' );
+    return crypto.createHash( 'sha1' ).update( parts.join( '&' ) ).digest( 'hex' );
 };
 
 Storehouse.prototype.AcceptUpload = function( request, response ) {
