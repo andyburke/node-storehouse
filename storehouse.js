@@ -110,7 +110,7 @@ Storehouse.prototype._getSignature = function( request ) {
     var parts = [];
     var keys = Object.keys( request.body ).sort();
     keys.forEach( function( key ) {
-        if ( key === 'signature' ) {
+        if ( key === 'signature' || key === 'file' ) {
             return;
         }
 
