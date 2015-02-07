@@ -19,7 +19,7 @@
     "body-parser": "~1.0.2",
     "mmmagic": "~0.3.7",
     "request": "~2.34.0",
-    "multer": "0.0.5"
+    "multer": "~0.1.7"
   },
   "engine": "node >= 0.10.0"
 }
