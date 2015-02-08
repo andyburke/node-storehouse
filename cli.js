@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 var program = require( 'commander' );
 var humanize = require( 'humanize' );
 
@@ -21,16 +22,13 @@ program
     .option( '--quiet', 'Do not print out upload events.' )
     .parse( process.argv );
 
-if ( !program.secret )
-{
+if ( !program.secret ) {
     var fs = require( 'fs' );
-    if ( fs.existsSync( keyfilename ) )
-    {
+    if ( fs.existsSync( keyfilename ) ) {
         var keyfile_contents = fs.readFileSync( keyfilename, 'utf8' );
         program.secret = keyfile_contents.trim();
     }
-    else
-    {
+    else {
         program.help();
         process.exit( 1 );
     }
@@ -44,10 +42,10 @@ var options = {
 
 var listenOptions = {
     ssl: {}
-}
+};
 
-if ( program.uploadurl )     options.uploadurl = program.uploadurl;
-if ( program.fetchurl )      options.fetchurl = program.fetchurl;
+if ( program.uploadurl )     options.uploadURL = program.uploadurl;
+if ( program.fetchurl )      options.fetchURL = program.fetchurl;
 if ( program.nooverwrite )   options.overwrite = false;
 if ( program.directory )     options.directory = program.directory;
 if ( program.allowDownload ) options.allowDownload = true;
@@ -60,15 +58,22 @@ if ( program.sslcert )       listenOptions.ssl.cert = program.sslcert;
 
 var storehouse = new Storehouse( options ).listen( listenOptions );
 
-if ( !program.quiet )
-{
-    console.log( "Storehouse started..." );
-    
+if ( !program.quiet ) {
+    console.log( '*** Storehouse started ( ' + humanize.date( 'c' ) + ' )' );
+
+    storehouse.on( 'upload-requested', function( event ) {
+        console.log( humanize.date( 'c' ) + ' upload REQUESTED: ' + event.path + ' (' + event.location + ') ' + event.type + ' (encoding: ' + event.encoding + ')' );
+    } );
+
     storehouse.on( 'uploaded', function( event ) {
-        console.log( humanize.date( 'c' ) + ' uploaded: ' + event.path + ' (' + event.location + ') ' + humanize.filesize( event.size ) );
+        console.log( humanize.date( 'c' ) + ' uploaded: ' + event.path + ' (' + event.location + ') ' + humanize.filesize( event.size ) + ' ' + event.type + ' (encoding: ' + event.encoding + ')' );
+    } );
+
+    storehouse.on( 'fetch-requested', function( event ) {
+        console.log( humanize.date( 'c' ) + ' url-fetch REQUESTED: "' + event.url + '": ' + event.path + ' (' + event.location + ')' );
     } );
 
     storehouse.on( 'fetched', function( event ) {
-        console.log( humanize.date( 'c' ) + ' fetched url "' + event.url + '": ' + event.path + ' (' + event.location + ') ' + humanize.filesize( event.size ) );
+        console.log( humanize.date( 'c' ) + ' fetched url "' + event.url + '": ' + event.path + ' (' + event.location + ') ' + humanize.filesize( event.size ) + ' ' + event.type );
     } );
 }

@@ -45,23 +45,31 @@
                 event.stopPropagation();
                 event.preventDefault();
                 
+                var opts = {};
                 var pathInput = uploadform.querySelector( '[data-field="path"]' );
-                var path = pathInput.value;
+                opts.path = pathInput.value;
                 
                 var fileInput = uploadform.querySelector( '[data-field="file"]' );
-                var file = fileInput.files[ 0 ];
+                opts.file = fileInput.files[ 0 ];
                 
+                var verification = '';
+                for ( var key in Object.keys( opts ).sort() ) {
+                    verification += key + '=' + opts[ key ] + '&';
+                }
+
                 // you would not want to leak your secret key like this, but we'll do it here for the example
                 //
                 // normally, you would make a request to your service asking for permission to upload this file
                 // you could then decide if they were a valid user, etc. and generate a signature for the upload
-                var signature = CryptoJS.SHA1( path + file.type + 'this is the secret key' );
+                verification += 'secret=this is the secret key';
+
+                var signature = CryptoJS.SHA1( verification );                
                 
                 var formData = new FormData();
  
-                formData.append( 'path', path );
+                formData.append( 'path', opts.path );
+                formData.append( 'file', opts.file );
                 formData.append( 'signature', signature.toString() );
-                formData.append( 'file', file );
              
                 var xhr = new XMLHttpRequest();
                 

@@ -2,7 +2,7 @@
   "name": "storehouse",
   "description": "Simple http file store in node.js",
   "author": "Andy Burke <aburke@bitflood.org>",
-  "version": "0.0.5",
+  "version": "1.0.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/andyburke/node-storehouse.git"
@@ -19,7 +19,7 @@
     "body-parser": "~1.0.2",
     "mmmagic": "~0.3.7",
     "request": "~2.34.0",
-    "multer": "0.0.5"
+    "multer": "~0.1.7"
   },
   "engine": "node >= 0.10.0"
 }
