@@ -369,11 +369,67 @@ function createDirectory( directory, callback ) {
 }
 
 function moveToDestination( source, dest, callback ) {
-    fs.rename( source, dest, function( error ) {
-        if ( error ) {
-            callback( {
+    let renamed = false;
+    let error = null;
+
+    async.series( [
+        function useRename( next ) {
+            fs.rename( source, dest, function( _error ) {
+                if ( _error ) {
+                    error = _error;
+                    next();
+                    return;
+                }
+
+                renamed = true;
+                next();
+            } );
+        },
+
+        function useStream( next ) {
+            if ( renamed ) {
+                next();
+                return;
+            }
+
+            let inputStream = fs.createReadStream( source );
+            let outputStream = fs.createWriteStream( dest );
+
+            inputStream.pipe( outputStream );
+
+            inputStream.on( 'end', function() {
+                fs.unlink( source, function( _error ) {
+                    if ( _error ) {
+                        error = _error;
+                        next();
+                        return;
+                    }
+
+                    renamed = true;
+                    next();
+                } );
+            } );
+
+            inputStream.on( 'error', function( _error ) {
+                error = _error;
+                next();
+            } );
+
+            outputStream.on( 'error', function( _error ) {
+                error = _error;
+                next();
+            } );
+        }
+    ], function( _error ) {
+        if ( _error ) {
+            callback( _error );
+            return;
+        }
+
+        if ( !renamed ) {
+            callback( error || {
                 error: 'error moving file',
-                message: error,
+                message: 'Unknown error moving file.',
                 code: 500
             } );
             return;
