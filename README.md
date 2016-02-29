@@ -26,9 +26,9 @@ sudo npm install storehouse -g
 If you're already using express, you can attach a storehouse directly to your app:
 
 ```javascript
-var Storehouse = require( 'storehouse' );
+const Storehouse = require( 'storehouse' );
 
-var storehouse = new Storehouse( {
+const storehouse = new Storehouse( {
     url: '/fileupload',
     directory: './files',
     allowDownload: true,
@@ -98,14 +98,14 @@ That's where the secret key comes in: to upload you must send a signature along 
 The signature is a SHA1 of the sorted key/value pairs in your request, plus a secret key:
 
 ```javascript
-var verification = '';
-for ( var key in Object.keys( opts ).sort() ) {
+let verification = '';
+for ( let key in Object.keys( opts ).sort() ) {
     verification += key + '=' + opts[ key ] + '&';
 }
 
 verification += 'secret=this is the secret key';
 
-var signature = CryptoJS.SHA1( verification );    
+const signature = CryptoJS.SHA1( verification );    
 ```
 
 The signature you send with the file must match this signature composed from the sorted key/value pairs of your request body plus the secret key.
@@ -128,13 +128,13 @@ ajaxCall( {
         // here your API has given us back a signature that allows this file to be uploaded,
         // now we can send the file to the server
 
-        var formData = new FormData();
+        let formData = new FormData();
 
         formData.append( 'path', path );
         formData.append( 'file', file ); // this would be from a file input in a form, for example
         formData.append( 'signature', signature );
 
-        var xhr = new XMLHttpRequest();
+        const xhr = new XMLHttpRequest();
 
         xhr.onreadystatechange = function() {
             if ( xhr.readyState == 4 ) // complete
@@ -181,6 +181,30 @@ Check out this great post by Vikrum Nijjar about switching from S3 to Fastly: ht
 That post started me down this road. Except I needed a way for users to upload things to my server that I could then allow Fastly to cache. Hence: Storehouse.
 
 # CHANGELOG
+
+v1.0.6
+------
+- Update docs
+
+v1.0.5
+------
+- Fall back to streams to move file if fs.rename failes (eg: EXDEV error)
+
+v1.0.4
+------
+- Update to ES6
+
+v1.0.3
+------
+- Bump dependency on multer
+
+v1.0.2
+------
+- Bugfix signature generation (again)
+
+v1.0.1
+------
+- Bugfix signature generation
 
 v1.0.0
 ------
