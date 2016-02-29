@@ -1,22 +1,22 @@
 'use strict';
 
-var http = require( 'http' );
-var https = require( 'https' );
-var requester = require( 'request' );
-var fs = require( 'node-fs' );
-var path = require( 'path' );
-var extend = require( 'node.extend' );
-var EventEmitter = require( 'events' ).EventEmitter;
-var util = require( 'util' );
-var crypto = require( 'crypto' );
-var async = require( 'async' );
-var express = require( 'express' );
-var bodyParser = require( 'body-parser' );
-var multer = require( 'multer' );
-var magic = require( 'mmmagic' );
-var mimeMagic = new magic.Magic( magic.MAGIC_MIME_TYPE );
+const http = require( 'http' );
+const https = require( 'https' );
+const requester = require( 'request' );
+const fs = require( 'node-fs' );
+const path = require( 'path' );
+const extend = require( 'node.extend' );
+const EventEmitter = require( 'events' ).EventEmitter;
+const util = require( 'util' );
+const crypto = require( 'crypto' );
+const async = require( 'async' );
+const express = require( 'express' );
+const bodyParser = require( 'body-parser' );
+const multer = require( 'multer' );
+const magic = require( 'mmmagic' );
+const mimeMagic = new magic.Magic( magic.MAGIC_MIME_TYPE );
 
-var defaults = {
+const defaults = {
     uploadURL: '/upload',
     fetchURL: '/fetch',
     directory: './',
@@ -29,7 +29,7 @@ var defaults = {
 module.exports = Storehouse;
 
 function Storehouse( _options ) {
-    var self = this;
+    const self = this;
     EventEmitter.call( self );
 
     self.options = extend( {}, defaults, _options );
@@ -42,10 +42,10 @@ function Storehouse( _options ) {
 util.inherits( Storehouse, EventEmitter );
 
 Storehouse.prototype.attach = function( app ) {
-    var self = this;
+    const self = this;
 
     if ( self.options.allowDownload ) {
-        var staticMiddleware = express.static( self.options.directory[ 0 ] == path.sep ? self.options.directory : ( process.cwd() + path.sep + self.options.directory ) );
+        const staticMiddleware = express.static( self.options.directory[ 0 ] === path.sep ? self.options.directory : process.cwd() + path.sep + self.options.directory );
 
         app.use( self.options.downloadPrefix, staticMiddleware );
     }
@@ -72,9 +72,9 @@ Storehouse.prototype.attach = function( app ) {
     }
 
     app.post( self.options.uploadURL, bodyParser(), multer(), function( request, response, next ) {
-        var filename = path.normalize( self.options.directory + path.sep + request.body.path );
-        var directory = path.dirname( filename );
-        var fileInfo = request.files.file;
+        const filename = path.normalize( self.options.directory + path.sep + request.body.path );
+        const directory = path.dirname( filename );
+        const fileInfo = request.files.file;
 
         self.emit( 'upload-requested', {
             path: request.body.path,
@@ -89,8 +89,8 @@ Storehouse.prototype.attach = function( app ) {
     } );
 
     app.post( self.options.fetchURL, bodyParser(), multer(), function( request, response, next ) {
-        var filename = path.normalize( self.options.directory + path.sep + request.body.path );
-        var directory = path.dirname( filename );
+        const filename = path.normalize( self.options.directory + path.sep + request.body.path );
+        const directory = path.dirname( filename );
 
         self.emit( 'fetch-requested', {
             url: request.body.url,
@@ -105,10 +105,10 @@ Storehouse.prototype.attach = function( app ) {
 };
 
 Storehouse.prototype._getSignature = function( request ) {
-    var self = this;
+    const self = this;
 
-    var parts = [];
-    var keys = Object.keys( request.body ).sort();
+    let parts = [];
+    const keys = Object.keys( request.body ).sort();
     keys.forEach( function( key ) {
         if ( key === 'signature' || key === 'file' ) {
             return;
@@ -123,7 +123,7 @@ Storehouse.prototype._getSignature = function( request ) {
 };
 
 Storehouse.prototype.AcceptUpload = function( request, response ) {
-    var self = this;
+    const self = this;
 
     if ( !request.files || !request.files.file ) {
         response.json( {
@@ -149,7 +149,7 @@ Storehouse.prototype.AcceptUpload = function( request, response ) {
         return;
     }
 
-    if ( self._getSignature( request ) != request.body.signature ) {
+    if ( self._getSignature( request ) !== request.body.signature ) {
         response.json( {
             error: 'invalid signature',
             message: 'Signature for this upload is invalid.'
@@ -157,9 +157,9 @@ Storehouse.prototype.AcceptUpload = function( request, response ) {
         return;
     }
 
-    var fileInfo = request.files.file;
-    var filename = path.normalize( self.options.directory + path.sep + request.body.path );
-    var directory = path.dirname( filename );
+    const fileInfo = request.files.file;
+    const filename = path.normalize( self.options.directory + path.sep + request.body.path );
+    const directory = path.dirname( filename );
 
     async.series( [
         // check if the file exists and if we can overwrite it if it does
@@ -202,7 +202,7 @@ Storehouse.prototype.AcceptUpload = function( request, response ) {
 };
 
 Storehouse.prototype.Fetch = function( request, response ) {
-    var self = this;
+    const self = this;
 
     if ( !request.body.url ) {
         response.json( {
@@ -228,7 +228,7 @@ Storehouse.prototype.Fetch = function( request, response ) {
         return;
     }
 
-    if ( self._getSignature( request ) != request.body.signature ) {
+    if ( self._getSignature( request ) !== request.body.signature ) {
         response.json( {
             error: 'invalid signature',
             message: 'Signature for this fetch request is invalid.'
@@ -236,8 +236,8 @@ Storehouse.prototype.Fetch = function( request, response ) {
         return;
     }
 
-    var filename = path.normalize( self.options.directory + path.sep + request.body.path );
-    var directory = path.dirname( filename );
+    const filename = path.normalize( self.options.directory + path.sep + request.body.path );
+    const directory = path.dirname( filename );
 
     async.series( [
         // check if the file exists and if we can overwrite it if it does
@@ -248,7 +248,7 @@ Storehouse.prototype.Fetch = function( request, response ) {
 
         // fetch the file
         function( callback ) {
-            var file = fs.createWriteStream( filename );
+            let file = fs.createWriteStream( filename );
 
             file.on( 'finish', function() {
                 file.close( callback );
@@ -297,7 +297,7 @@ Storehouse.prototype.Fetch = function( request, response ) {
     } );
 };
 
-var listenDefaults = {
+const listenDefaults = {
     port: 8888,
     ssl: {
         port: 4443
@@ -305,15 +305,15 @@ var listenDefaults = {
 };
 
 Storehouse.prototype.listen = function( _options ) {
-    var self = this;
+    const self = this;
 
-    var options = extend( {}, listenDefaults, _options );
+    const options = extend( {}, listenDefaults, _options );
 
-    var app = express();
+    const app = express();
     self.attach( app );
 
     if ( options.ssl && options.ssl.key && options.ssl.cert ) {
-        var httpsServer = https.createServer( {
+        const httpsServer = https.createServer( {
             key: fs.readFileSync( options.ssl.key ),
             cert: fs.readFileSync( options.ssl.cert ),
             ca: options.ssl.ca || []
@@ -327,7 +327,7 @@ Storehouse.prototype.listen = function( _options ) {
         } );
     }
 
-    var httpServer = http.createServer( app );
+    const httpServer = http.createServer( app );
 
     httpServer.listen( options.port );
 

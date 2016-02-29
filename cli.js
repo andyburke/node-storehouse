@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
-var program = require( 'commander' );
-var humanize = require( 'humanize' );
+'use strict';
 
-var keyfilename = '.storehouse_key';
+const program = require( 'commander' );
+const humanize = require( 'humanize' );
+
+const keyfilename = '.storehouse_key';
 
 program
     .usage( '[options]' )
@@ -23,7 +25,7 @@ program
     .parse( process.argv );
 
 if ( !program.secret ) {
-    var fs = require( 'fs' );
+    const fs = require( 'fs' );
     if ( fs.existsSync( keyfilename ) ) {
         var keyfile_contents = fs.readFileSync( keyfilename, 'utf8' );
         program.secret = keyfile_contents.trim();
@@ -34,29 +36,50 @@ if ( !program.secret ) {
     }
 }
 
-var Storehouse = require( './storehouse' );
+let Storehouse = require( './storehouse' );
 
-var options = {
+const options = {
     secret: program.secret
 };
 
-var listenOptions = {
+const listenOptions = {
     ssl: {}
 };
 
-if ( program.uploadurl )     options.uploadURL = program.uploadurl;
-if ( program.fetchurl )      options.fetchURL = program.fetchurl;
-if ( program.nooverwrite )   options.overwrite = false;
-if ( program.directory )     options.directory = program.directory;
-if ( program.allowDownload ) options.allowDownload = true;
-if ( program.prefix )        options.downloadPrefix = program.prefix;
-if ( program.cors )          options.cors = true;
-if ( program.cors_origin )   options.origin = program.cors_origin;
-if ( program.port )          listenOptions.port = program.port;
-if ( program.sslkey )        listenOptions.ssl.key = program.sslkey;
-if ( program.sslcert )       listenOptions.ssl.cert = program.sslcert;
+if ( program.uploadurl ) {
+    options.uploadURL = program.uploadurl;
+}
+if ( program.fetchurl ) {
+    options.fetchURL = program.fetchurl;
+}
+if ( program.nooverwrite ) { options.overwrite = false;
+}
+if ( program.directory ) {
+    options.directory = program.directory;
+}
+if ( program.allowDownload ) {
+    options.allowDownload = true;
+}
+if ( program.prefix ) {
+    options.downloadPrefix = program.prefix;
+}
+if ( program.cors ) {
+    options.cors = true;
+}
+if ( program.cors_origin ) {
+    options.origin = program.cors_origin;
+}
+if ( program.port ) {
+    listenOptions.port = program.port;
+}
+if ( program.sslkey ) {
+    listenOptions.ssl.key = program.sslkey;
+}
+if ( program.sslcert ) {
+    listenOptions.ssl.cert = program.sslcert;
+}
 
-var storehouse = new Storehouse( options ).listen( listenOptions );
+const storehouse = new Storehouse( options ).listen( listenOptions );
 
 if ( !program.quiet ) {
     console.log( '*** Storehouse started ( ' + humanize.date( 'c' ) + ' )' );
